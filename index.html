@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lucky Draw Software</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('images/bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      z-index: -1;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    .title {
+      font-size: 1.5vw;
+      font-weight: bold;
+      padding-top: 30px;
+      color: #ffcc00;
+    }
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding-bottom: 20px;
+    }
+    .instruction {
+      margin-top: 3vh;
+      font-size: 1.2em;
+      color: #ccc;
+    }
+    .bottom-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(-30%);
+    }
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 1vw;
+      flex-wrap: wrap;
+      margin: 3vh 0 2vh;
+    }
+    .card {
+      width: 12vw;
+      height: 16vw;
+      max-width: 80px;
+      max-height: 120px;
+      background-color: #2e2360;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      font-weight: bold;
+      color: #ffae42;
+    }
+    .prize-label {
+      font-size: 1em;
+      background-color: #2d2a64;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-bottom: 1vh;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+    .btn {
+      font-size: 1em;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-yellow {
+      background-color: #ffcf4b;
+      color: #2e2360;
+    }
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .popup-content {
+      background: url('images/bg.jpg') no-repeat center center;
+      background-size: cover;
+      border-radius: 20px;
+      width: 90vw;
+      max-width: 960px;
+      max-height: 50vh;
+      padding: 3vh 2vw;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    .popup-number {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+    .popup-digit {
+      font-size: 6vw;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">LUCKY DRAW SOFTWARE</div>
+
+  <div class="main-content">
+    <div class="instruction">Nhấn nút Quay số để bắt đầu</div>
+
+    <div class="bottom-controls">
+      <div class="cards" id="cards">
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+      </div>
+
+      <div class="prize-label">GIẢI BA</div>
+      <div class="buttons">
+        <button class="btn btn-yellow" onclick="drawNumbers()">QUAY SỐ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" id="popup" onclick="closePopup()">
+    <div class="popup-content">
+      <div>CHÚC MỪNG KHÁCH MỜI CÓ SỐ</div>
+      <div class="popup-number" id="popupNumber"></div>
+    </div>
+  </div>
+
+  <script>
+    function getRandomDigit() {
+      return Math.floor(Math.random() * 10);
+    }
+
+    function drawNumbers() {
+      const cards = document.querySelectorAll('.card');
+      const finalDigits = [];
+      let animationsCompleted = 0;
+
+      cards.forEach((card, index) => {
+        let start = Date.now();
+        const interval = setInterval(() => {
+          const now = Date.now();
+          const elapsed = now - start;
+          if (elapsed >= 3000) {
+            clearInterval(interval);
+            const digit = getRandomDigit();
+            card.innerText = digit;
+            finalDigits[index] = digit;
+            animationsCompleted++;
+            if (animationsCompleted === cards.length) {
+              showPopup(finalDigits);
+            }
+          } else {
+            card.innerText = getRandomDigit();
+          }
+        }, 50);
+      });
+    }
+
+    function showPopup(digits) {
+      const popup = document.getElementById('popup');
+      const popupNumber = document.getElementById('popupNumber');
+      popupNumber.innerHTML = '';
+      digits.forEach(digit => {
+        const span = document.createElement('span');
+        span.className = 'popup-digit';
+        span.textContent = digit;
+        popupNumber.appendChild(span);
+      });
+      popup.style.display = 'flex';
+    }
+
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>
